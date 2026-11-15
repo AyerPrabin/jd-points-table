@@ -84,6 +84,18 @@ export function saveEvent(
   }
 }
 
+/** Private mode on some phones throws on every write, so check once at start. */
+export function storageWorks(storage: StorageLike | null = defaultStorage()): boolean {
+  if (!storage) return false;
+  try {
+    storage.setItem(`${STORAGE_KEY}:probe`, '1');
+    storage.removeItem(`${STORAGE_KEY}:probe`);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function clearEvent(storage: StorageLike | null = defaultStorage()): void {
   try {
     storage?.removeItem(STORAGE_KEY);

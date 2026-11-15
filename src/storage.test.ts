@@ -7,6 +7,7 @@ import {
   loadEvent,
   parseEvent,
   saveEvent,
+  storageWorks,
   type EventState,
 } from './storage';
 
@@ -60,11 +61,18 @@ describe('storage', () => {
     expect(loadEvent(blocked)).toEqual(emptyEvent());
     expect(saveEvent(sample, blocked)).toBe(false);
     expect(() => clearEvent(blocked)).not.toThrow();
+    expect(storageWorks(blocked)).toBe(false);
   });
 
   it('copes with no storage at all', () => {
     expect(loadEvent(null)).toEqual(emptyEvent());
     expect(saveEvent(sample, null)).toBe(false);
+  });
+
+  it('reports working storage and leaves no probe key behind', () => {
+    const store = memoryStorage();
+    expect(storageWorks(store)).toBe(true);
+    expect(store.data.size).toBe(0);
   });
 
   it('clears the saved event', () => {
