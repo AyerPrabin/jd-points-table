@@ -1,5 +1,5 @@
 import { MATCH_COUNT } from './config';
-import type { StandingRow, Standings } from './scoring';
+import { isComplete, type StandingRow, type Standings } from './scoring';
 
 function holdNote(row: StandingRow): string {
   if (row.holdReason === 'invalid') {
@@ -32,13 +32,18 @@ export function standingsToCsv(standings: Standings): string {
 
 /** Plain text for pasting into a WhatsApp group. *text* shows as bold there. */
 export function standingsToText(standings: Standings, title: string): string {
-  const lines: string[] = [`*${title.trim() || 'Event standings'}*`, ''];
+  const complete = isComplete(standings);
+  const lines: string[] = [
+    `*${title.trim() || 'Event standings'}*`,
+    complete ? 'Final standings' : 'Standings so far, not final yet',
+    '',
+  ];
 
   if (standings.ranked.length === 0) {
     lines.push('No ranked squads yet.');
   }
   for (const row of standings.ranked) {
-    const medal = row.rank === 1 ? ' (winner)' : '';
+    const medal = complete && row.rank === 1 ? ' (winner)' : '';
     lines.push(`${row.rank}. ${row.name} - ${row.total} pts, ${row.kills} kills${medal}`);
   }
 

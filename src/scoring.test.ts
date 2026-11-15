@@ -8,6 +8,7 @@ import {
   computeStandings,
   emptyResults,
   findMatchIssues,
+  isComplete,
   killPoints,
   matchPoints,
   matchProgress,
@@ -297,6 +298,29 @@ describe('computeStandings with missing results', () => {
     ]);
     expect(names(ranked)).toEqual(['Squad A']);
     expect(held[0]?.holdReason).toBe('invalid');
+  });
+});
+
+describe('isComplete', () => {
+  const all = [played(1, 0), played(2, 0), played(3, 0)];
+
+  it('is true when every squad has all three results', () => {
+    const standings = computeStandings([squad('A', all), squad('B', [...all].reverse())]);
+    expect(isComplete(standings)).toBe(true);
+  });
+
+  it('is false while a match is still pending', () => {
+    const standings = computeStandings([squad('A', all), squad('B', [played(2, 0)])]);
+    expect(isComplete(standings)).toBe(false);
+  });
+
+  it('is false while a squad is held back', () => {
+    const held = squad('B', [played(2, 0), played(1, 0), MISSING]);
+    expect(isComplete(computeStandings([squad('A', all), held]))).toBe(false);
+  });
+
+  it('is false for an empty event', () => {
+    expect(isComplete(computeStandings([]))).toBe(false);
   });
 });
 

@@ -35,14 +35,26 @@ describe('standingsToCsv', () => {
 });
 
 describe('standingsToText', () => {
-  it('lists ranked squads with points and kills under a bold title', () => {
+  it('says the table is not final while a result is missing', () => {
     const text = standingsToText(standings, 'Friday Scrim');
-    expect(text.split('\n').slice(0, 4)).toEqual([
+    expect(text.split('\n').slice(0, 5)).toEqual([
       '*Friday Scrim*',
+      'Standings so far, not final yet',
       '',
-      '1. Night Owls - 48 pts, 15 kills (winner)',
+      '1. Night Owls - 48 pts, 15 kills',
       '2. Squad B - 33 pts, 3 kills',
     ]);
+    expect(text).not.toContain('winner');
+  });
+
+  it('names the winner once every result is in', () => {
+    const done = computeStandings([
+      squad('a', 'Night Owls', [played(1, 6), played(2, 4), played(1, 5)]),
+      squad('b', 'Squad B', [played(2, 1), played(1, 2), played(2, 0)]),
+    ]);
+    const lines = standingsToText(done, 'Friday Scrim').split('\n');
+    expect(lines[1]).toBe('Final standings');
+    expect(lines[3]).toBe('1. Night Owls - 48 pts, 15 kills (winner)');
   });
 
   it('lists held squads separately with the missing match', () => {

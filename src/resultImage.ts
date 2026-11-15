@@ -1,4 +1,4 @@
-import type { Standings } from './scoring';
+import { isComplete, type Standings } from './scoring';
 
 const BG = '#0C0C0C';
 const SURFACE = '#1C1C1C';
@@ -41,10 +41,14 @@ export async function renderResultImage(
 
   ctx.fillStyle = GOLD;
   ctx.font = '700 38px Georgia, serif';
-  ctx.fillText(title.trim() || 'Event standings', 148, 78);
+  ctx.fillText(title.trim() || 'Event standings', 148, 78, width - 180);
   ctx.fillStyle = SECONDARY;
   ctx.font = '400 20px system-ui, sans-serif';
-  ctx.fillText('Final standings', 148, 112);
+  ctx.fillText(
+    isComplete(standings) ? 'Final standings' : 'Standings so far, not final',
+    148,
+    112,
+  );
 
   ctx.font = '600 16px system-ui, sans-serif';
   ctx.fillText('#', 48, top - 14);

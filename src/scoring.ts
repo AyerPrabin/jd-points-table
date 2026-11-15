@@ -187,6 +187,18 @@ export function computeStandings(squads: readonly Squad[]): Standings {
   return { ranked, held };
 }
 
+/**
+ * True once every squad has a result for every match and nobody is held back.
+ * Until then the table is only "standings so far", never the final result.
+ */
+export function isComplete(standings: Standings): boolean {
+  return (
+    standings.held.length === 0 &&
+    standings.ranked.length > 0 &&
+    standings.ranked.every((row) => row.matchPoints.every((p) => p !== null))
+  );
+}
+
 /** Problems in one match that the host should fix, e.g. two squads both 1st. */
 export interface MatchIssue {
   match: number;
